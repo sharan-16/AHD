@@ -1,17 +1,18 @@
 module ALU (
-    input [31:0] operand1,
-    input [31:0] operand2,
-    output [31:0] alu_res,
-    input [2:0] opcode,
-    input is_signed
+    input wire [31:0] operand1,
+    input wire [31:0] operand2,
+    output wire [31:0] alu_res,
+    input wire [2:0] opcode,
+    input wire is_signed
 );
 
 reg [31:0] temp;
 
-operand1 =  is_signed && operand1[31] == 1 ? /*twos compliment of operand1*/:operand1;
-operand2 =  is_signed && operand2[31] == 1 ? /*twos compliment of operand2*/:operand2;
+assign operand1 =  is_signed && operand1[31] == 1 ? {1'b0,~(operand1[30:0])+1'b1} : operand1;
+assign operand2 =  is_signed && operand2[31] == 1 ? {1'b0,~(operand2[30:0])+1'b1} : operand2;
 
-// twos compliment of operand1 = {0,~(operand1[30:0]+1)} -- need to try this
+// twos compliment of operand1 = {1'b0,~(operand1[30:0])+1'b1} -- need to try this
+
 case(opcode)
 
     000: alu_res = operand1 + operand2; //add
@@ -31,7 +32,7 @@ case(opcode)
         else alu_res = operand1 >> operand2;
     end
 endcase
-
-alu_res =  is_signed && alu_res[31] == 1 ? /*twos compliment of alu_res*/:alu_res;
+assign alu_res =  is_signed && alu_res[31] == 1 ? {1'b0,~(alu_res[30:0])+1'b1} : alu_res;
+end
 
 endmodule
